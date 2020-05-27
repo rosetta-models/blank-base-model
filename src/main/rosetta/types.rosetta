@@ -1,0 +1,159 @@
+namespace "com.rosetta.model.bcpm"
+version "${project.version}"
+
+type BusinessProcess: <"Definition of a business process that is meant to be covered by the Guidelines on Business Continuity for Market Infrastructure, and is identified by a unique key.">
+    [metadata key]
+    description string (1..1) <"Description of the business process.">
+    operator Operator (1..1) <"Legal entity operating the business process.">
+        [metadata reference]
+    primaryFacility OperatingFacility (1..1) <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. The infrastructure at which the operator’s activities are normally conducted.">
+    infrastructure ICTInfrastructure (0..1) <"The ICT infrastructure supporting the business process, which is a specific type of operating facility and may differ from the facility at which the business process itself is operated.">
+
+type CriticalBusinessProcess extends BusinessProcess: <"Annex A Section II.3.2 of the Guidelines on Business Continuity for Market Infrastructure: Critical Processes. Operators shall specifically identify the most relevant processes relating to corporate functions whose non-availability - owing to the high impact of the resulting damage - necessitates high levels of business continuity to be achieved through preventive measures and business continuity solutions activated in case of incident.">
+    criticalType CriticalBusinessProcessTypeEnum (1..1) <"The type of business process that warrants categorisation as critical.">
+    responsiblePerson PersonInOrganisation (1..1) <"Annex A Section II.3.2 of the Guidelines on Business Continuity for Market Infrastructure: Critical Processes. For each critical process, the operator shall identify the person responsible.">
+    standbyFacility OperatingFacility (1..1) <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. An infrastructure that enables the operator to continue to carry out critical and systemically important processes, even in the event of incident or disaster that disables the primary facility.">
+    disasterRecovery DisasterRecovery (0..1) <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. A document establishing the technical and organizational measures to cope with events that put electronic data processing (EDP) centers out of service. Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. With reference to central and peripheral information systems, the business continuity plan shall include a disaster recovery plan.">
+    recoveryTime TimeInterval (1..1) <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. The interval between the operator’s declaration of the state of crisis and the recovery of the process to a predetermined level of service. It consists of the time it takes to analyze the events and decide on the actions to take, before intervening; plus (ii) the 'restart time'. Annex A Section II.3.2 of the Guidelines on Business Continuity for Market Infrastructure: Critical Processes. The person responsible for the process shall determine the process recovery time.">
+    restartTime TimeInterval (1..1) <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. It consists of the time it takes to start again the process by means of technical and organizational interventions and the subsequent verification of the possibility of making the services available again without damage and in conditions of safety and security.">
+
+
+type SystemicallyImportantProcess extends CriticalBusinessProcess: <"Processes that are critical to the Italian financial system, those that by contagion can cause a blockage of the entire domestic marketplace, are concentrated in the payment systems and the procedures for access to the financial markets. For the purposes of the present provisions, these processes are defined as 'systemically important processes' for business continuity of Italian financial system.">
+    [rootType]
+    systemicallyImportantType SystemicallyImportantProcessEnum (1..1) <"The type of business process that warrants categorisation as systemically important.">
+    
+    condition MaxRecoveryTime: <"Annex A Section III.2.5 of the Guidelines on Business Continuity for Market Infrastructure: Recovery time and service availability. The recovery time for systemically important processes shall not exceed four hours.">
+        SystemicallyImportantProcess -> recoveryTime -> intervalMultiplier <= 4
+        and SystemicallyImportantProcess -> recoveryTime -> intervalUnit = TimeUnitEnum -> H
+    
+    condition MaxRestartTime: <"Annex A Section III.2.5 of the Guidelines on Business Continuity for Market Infrastructure: Recovery time and service availability. The restart time for systemically important processes shall not exceed two hours.">
+    SystemicallyImportantProcess -> restartTime -> intervalMultiplier <= 2
+        and SystemicallyImportantProcess -> restartTime -> intervalUnit = TimeUnitEnum -> H
+    
+    condition ResponsiblePerson: <"Annex A Section II.3.3 of the Guidelines on Business Continuity for Market Infrastructure: Person responsible for business continuity planning. The person responsible for business continuity planning shall have an appropriate hierarchical rank and function.">
+        SystemicallyImportantProcess -> responsiblePerson -> rank = "CEO"
+
+    condition standbyICTInfrastructure: <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. The plan must permit important electronic data processing (EDP) procedures to be performed at standby facilities.">
+        if SystemicallyImportantProcess -> infrastructure -> infrastructureType = ICTInfrastructureTypeEnum -> EDP then
+            SystemicallyImportantProcess -> disasterRecovery exists
+
+
+type PersonInOrganisation extends NaturalPerson: <"Annex A Section II.3.3 of the Guidelines on Business Continuity for Market Infrastructure: Person responsible for business continuity planning. The person responsible for the process shall determine, in observance of the strategic guidelines and rules laid down in the business continuity plan, the process recovery time and shall collaborate actively in designing business continuity measures.">
+    rank string (1..1) <"Hierarchical rank of the person in the organisation. Ideally could be replaced by an enum.">
+    functionalRole string (1..1) <"Function of the person in the organisation. Ideally could be replaced by an enum.">
+
+type Operator extends LegalEntity: <"Definition of the legal entity operating a business process that is subject to Business Continuty Planning rules.">
+
+type EventArchetype: <"Archetype description of an event covered by the Guidelines on Business Continuity for Market Infrastructure. An event archetype does not refer to an actual event but describes a hypothetical event that needs to be planned for.">
+    description string (1..1) <"Description of the event archetype.">
+
+type IncidentArchetype extends EventArchetype: <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Scope of the business continuity plan. Sectoral or company-level incidents or broader disasters striking the operator or significant counterparties.">
+    location BusinessCenterEnum (1..1) <"The geographical location of the incident event.">
+    disasterType DisasterTypeEnum (0..1) <"Optional attribute in case the event is deemed a disaster.">
+
+type Event: <"Basic characterisation of an event covered by the Guidelines on Business Continuity for Market Infrastructure, with a time-stamp and a key.">
+    [metadata key]
+    timestamp zonedDateTime (1..1) <"The timestamp when the event gets recorded.">
+
+type IncidentEvent extends Event: <"Annex A Section I.2 of the Guidelines MaxRecoveryTimeon Business Continuity for Market Infrastructure: Definitions. Business continuity management is the set of initiatives aimed at reducing to what is deemed an acceptable level the damage resulting from incidents or disasters affecting an operator directly or indirectly.">
+    incidentArchetype IncidentArchetype (1..1) <"Description of the incident archetype for this particular event.">
+
+type CrisisEvent extends Event: <"Section 2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. A situation of formally declared interruption or deterioration of one or more critical or systemically important processes as a consequence of incident or disaster.">
+    criticalBusinessProcesses CriticalBusinessProcess (1..*) <"The critical business process(es) impacted by the incident or disaster.">
+    causingIncident IncidentEvent (1..1) <"Reference to the incident or disaster that caused the crisis.">
+        [metadata reference]
+
+type RecoveryEvent extends Event: <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. Recovery of a process to a pre-determined level of service.">
+    [rootType]
+    criticalBusinessProcess CriticalBusinessProcess (1..1) <"The critical business process that has been deemed to have recovered.">
+    crisis CrisisEvent (1..1) <"Reference to the crisis event that the process is recovering from.">
+        [metadata reference]
+
+    condition RecoveringProcess: <"The recovering process must be included in the list of business processes impacted by the crisis.">
+        RecoveryEvent -> crisis -> criticalBusinessProcesses contains RecoveryEvent -> criticalBusinessProcess
+
+    condition RecoveryTime: <"The interval between the operator’s declaration of the state of crisis and the recovery of the process to a predetermined level of service. It consists of the time it takes: (i) to analyze the events and decide on the actions to take, before intervening; (ii) to start again the process by means of technical and organizational interventions and the subsequent verification of the possibility of making the services available again without damage and in conditions of safety and security ('restart time').">
+    CalcTimeInterval( 
+        RecoveryEvent -> crisis -> timestamp,
+        RecoveryEvent -> timestamp,
+        RecoveryEvent -> criticalBusinessProcess -> recoveryTime -> intervalUnit
+        ) 
+        < 
+        RecoveryEvent -> criticalBusinessProcess -> recoveryTime -> intervalMultiplier
+
+type OperatingFacility: <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. A facility is the infrastructure at which the operator’s activities are conducted.">
+    [metadata key]
+    description string (1..1) <"Description of the operating facility.">
+    location BusinessCenterEnum (1..1) <"Physical location of the operating facility.">
+    
+type ICTInfrastructure extends OperatingFacility: <"Information and communication technology supporting a business process. The characteristics of the ICT infrastructure, like geographical location, may differ from the characteristics of the business process itself: for instance in the case of usage of data centers that are remote from the process where they are being used.">
+    infrastructureType ICTInfrastructureTypeEnum (1..1) <"Type of ICT infrastructure.">
+
+type DisasterRecovery: <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. A document establishing the technical and organizational measures to cope with events that put electronic data processing (EDP) centers out of service. Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. With reference to central and peripheral information systems, the business continuity plan shall include a disaster recovery plan.">
+    standbyICTInfrastructure ICTInfrastructure (1..1) <"Annex A Section I.2 of the Guidelines on Business Continuity for Market Infrastructure: Definitions. The plan must permit important electronic data processing (EDP) procedures to be performed at standby facilities.">
+    backUpGeneration BackUpGeneration (1..1) <"Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. The disaster recovery plan shall indicate the mode and frequency of generation of back-up copies of production files.">
+
+type BackUpGeneration: <"Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. The business continuity plan shall establish the rules for retaining back-up copies of important documents (e.g. contracts) in remote locations from those where the originals are kept.">
+    frequency TimeInterval (1..1) <"The frequency of back-up.">
+    mode BackUpModeEnum (1..1) <"The mode of back-up: physical, electronic etc.">
+
+type CrisisDeclarationProcedure: <"Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. The business continuity plan shall specify the conditions and procedures for declaring the state of crisis.">
+        escalationProcedure IncidentCommunicationChannel (1..*) <"Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. The business continuity plan shall assign the power to declare a state of crisis. There shall be measures for rapid escalation that make it possible, once the extent of the incident has been determined, to proceed rapidly to the declaration of a state of crisis.">
+        trigger CrisisTrigger (1..*) <"The list of potential failures associated to each business process that should trigger the declaration of a crisis.">
+
+type CrisisTrigger: <"Specification of the trigger point associated to a business process, which failure should lead to the declaration of a crisis.">
+    criticalBusinessProcess CriticalBusinessProcess (1..1) <"The critical business process that is associated to">
+        [metadata reference]
+    triggerPoint string (1..1) <"Description of the type or severity of the critical business process failure that should trigger the declaration of a crisis.">
+
+type CrisisManagementProcedure: <"Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. The business continuity plan shall specify the organization and the procedures to follow in crisis situations.">
+    communicationProcedure CrisisCommunicationProcedure (1..1) <"Annex A Section II.3.4 of the Guidelines on Business Continuity for Market Infrastructure: the content of the business continuity plan. The business continuity plan shall specify the modalities of communication with customers, significant counterparties, authorities and the media.">
+
+type CrisisCommunicationProcedure: <"Communication procedures in the event of a crisis, which specifies the incident communication channels to use each type of stakeholder.">
+    internal IncidentCommunicationChannel (1..*) <"Communication channels with internal stakeholders for various types of incidents.">
+    customers IncidentCommunicationChannel (1..*) <"Communication channels with customers for various types of incidents.">
+    significantCounterparties IncidentCommunicationChannel (1..*) <"Communication channels with significant counterparties for various types of incidents.">
+    authorities IncidentCommunicationChannel (1..*) <"Communication channels with authorities for various types of incidents.">
+    media IncidentCommunicationChannel (1..*) <"Communication channels with media for various types of incidents.">
+
+type IncidentCommunicationChannel extends CommunicationChannel: <"Characterisation of a communication channel in case of incident.">
+    incident IncidentArchetype (1..1)
+    timing TimeInterval (1..1)
+
+type CommunicationChannel: <"Characterisation of a communication channel by its sender, recipient and method.">
+    sender PersonInOrganisation (1..1)
+    recipient PersonInOrganisation (1..1)
+    mode CommunicationMode (1..*)
+
+type CommunicationMode: <"Description of a communication mode which can be either email, phone, etc.">
+    email string (0..1)
+    telephone string (0..1)
+    condition: one-of
+
+/*
+    DEFINITIONS COPIED FROM THE ISDA CDM - This should be replaced to use an "import" mechanism for the CDM "base" namespace
+*/
+
+// This one is not currently in the ISDA CDM, but it should probably go into some base namespace anyway
+type TimeInterval: <"Description of a time interval.">
+	intervalMultiplier int (1..1) <"A time interval multiplier, e.g. 1, 2 or 3 etc. A negative value can be used when specifying an offset relative to another time, e.g. -2 mins.">
+	intervalUnit TimeUnitEnum (1..1) <"A base time interval, e.g. a sec, min or hour.">
+
+type LegalEntity: <"A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI).">
+    [metadata key]
+    entityId string (0..*) <"A legal entity identifier (e.g. RED entity code or LEI).">
+    name string (1..1) <"The legal entity name.">
+
+type NaturalPerson: <"A class to represent the attributes that are specific to a natural person.">
+	[metadata key]
+
+	honorific string (0..1) <"An honorific title, such as Mr., Ms., Dr. etc.">
+	firstName string (1..1) <"The natural person's first name. It is optional in FpML.">
+	middleName string (0..*)
+	initial string (0..*)
+	surname string (1..1) <"The natural person's surname.">
+	suffix string (0..1) <"Name suffix, such as Jr., III, etc.">
+	dateOfBirth date (0..1) <"The natural person's date of birth.">
+
+	condition NaturalPerson_choice: <"Choice rule to represent an FpML choice construct.">
+		optional choice middleName, initial

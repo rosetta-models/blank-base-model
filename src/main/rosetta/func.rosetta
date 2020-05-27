@@ -1,0 +1,17 @@
+namespace "com.rosetta.model.bcpm"
+version "${project.version}"
+
+/*func RecoveryTimeInterval: <"The interval between the operator’s declaration of the state of crisis and the recovery of the process to a predetermined level of service. It consists of the time it takes: (i) to analyze the events and decide on the actions to take, before intervening; (ii) to start again the process by means of technical and organizational interventions and the subsequent verification of the possibility of making the services available again without damage and in conditions of safety and security ('restart time').">
+    inputs:
+        recoveryTime zonedDateTime (1..1)
+        crisis CrisisEvent (1..1)
+    output:
+        interval TimeInterval (1..1)*/
+
+func CalcTimeInterval: <"Calculation of a time interval between a start time and an end time, expressed as a number of interval units (by default, seconds). If the end time is before the start time, the time interval will be negative.">
+    inputs:
+        t1 zonedDateTime (1..1) <"Start time.">
+        t2 zonedDateTime (1..1) <"End time.">
+        intervalUnit TimeUnitEnum (0..1) <"Time unit in which the interval will be expressed. If none is specified, seconds will be used.">
+    output:
+        intervalMultiplier number (1..1)
