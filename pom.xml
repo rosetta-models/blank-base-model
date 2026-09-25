@@ -24,7 +24,7 @@
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 		<mockito.version>2.23.0</mockito.version>
 		<guava.version>26.0-jre</guava.version>
-		<apache.commons.lang3.version>3.1</apache.commons.lang3.version>
+		<apache.commons.lang3.version>3.18.0</apache.commons.lang3.version>
 		<apache.commons.cli.version>1.4</apache.commons.cli.version>
     </properties>
 
