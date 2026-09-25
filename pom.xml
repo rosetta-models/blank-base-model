@@ -17,15 +17,15 @@
 		<rosetta.common.version>0.0.0.master</rosetta.common.version>
 		<rosetta.dsl.version>0.0.0.master</rosetta.dsl.version>
 		<rosetta.code-generators.version>0.0.0.master</rosetta.code-generators.version>
-		<xtext.version>2.15.0</xtext.version>
+		<xtext.version>2.44.0</xtext.version>
 		<junit.jupiter.version>5.2.0</junit.jupiter.version>
 		<junit.platform.version>1.3.0</junit.platform.version>
 		<opengamma.strata.version>1.7.0</opengamma.strata.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 		<mockito.version>2.23.0</mockito.version>
 		<guava.version>26.0-jre</guava.version>
-		<apache.commons.lang3.version>3.1</apache.commons.lang3.version>
-		<apache.commons.cli.version>1.4</apache.commons.cli.version>
+		<apache.commons.lang3.version>3.20.0</apache.commons.lang3.version>
+		<apache.commons.cli.version>1.11.0</apache.commons.cli.version>
     </properties>
 
 	<profiles>
@@ -35,7 +35,7 @@
 				<plugins>
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
-						<version>3.1.0</version>
+						<version>3.5.0</version>
 						<executions>
 							<execution>
 								<id>copy-documentation</id>
@@ -116,7 +116,7 @@
 					<plugin>
 						<groupId>kr.motd.maven</groupId>
 						<artifactId>sphinx-maven-plugin</artifactId>
-						<version>2.2.2</version>
+						<version>2.10.0</version>
 						<configuration>
 							<sourceDirectory>${project.build.directory}/documentation-build</sourceDirectory>
 							<outputDirectory>${project.build.directory}/classes/cdm/modeldoc</outputDirectory>
@@ -133,7 +133,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>3.12.0</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -169,7 +169,7 @@
                     <plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>3.4.0</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -227,7 +227,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
-						<version>3.1.0</version>
+						<version>3.5.0</version>
 						<executions>
 							<execution>
 								<id>copy-src-generated-daml</id>
@@ -316,7 +316,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
-						<version>3.1.0</version>
+						<version>3.5.0</version>
 						<executions>
 							<execution>
 								<id>copy-src-generated-typescript</id>
@@ -386,7 +386,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
-						<version>3.1.0</version>
+						<version>3.5.0</version>
 						<executions>
 							<execution>
 								<id>copy-src-generated-scala</id>
@@ -437,7 +437,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<phase>clean</phase>
@@ -488,7 +488,7 @@
 <!--			</plugin>-->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<id>copy-cdm-files</id>
@@ -533,7 +533,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.6.2</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -603,7 +603,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.16.0</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -651,7 +651,7 @@
 						<dependency>
 							<groupId>org.apache.maven</groupId>
 							<artifactId>maven-core</artifactId>
-							<version>3.2.5</version>
+							<version>3.9.16</version>
 							<exclusions>
 								<exclusion>
 									<groupId>com.google.guava</groupId>
@@ -668,22 +668,22 @@
 						<dependency>
 							<groupId>org.eclipse.jdt</groupId>
 							<artifactId>org.eclipse.jdt.core</artifactId>
-							<version>3.15.0</version>
+							<version>3.47.0</version>
 						</dependency>
 						<dependency>
 							<groupId>org.eclipse.jdt</groupId>
 							<artifactId>org.eclipse.jdt.compiler.apt</artifactId>
-							<version>1.3.300</version>
+							<version>1.4.300</version>
 						</dependency>
 						<dependency>
 							<groupId>org.eclipse.jdt</groupId>
 							<artifactId>org.eclipse.jdt.compiler.tool</artifactId>
-							<version>1.2.300</version>
+							<version>1.3.200</version>
 						</dependency>
 						<dependency>
 							<groupId>org.eclipse.platform</groupId>
 							<artifactId>org.eclipse.equinox.common</artifactId>
-							<version>3.10.100</version>
+							<version>3.21.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>
